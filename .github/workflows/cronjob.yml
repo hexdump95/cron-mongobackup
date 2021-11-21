@@ -10,6 +10,9 @@ jobs:
     container: mongo:5.0-focal
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
       - name: Compress db
         run: |
           mongodump --uri=${{ secrets.MONGODB_URI }}/${{ secrets.MONGODB_DB }}
@@ -19,7 +22,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: mongobackup
-          path: ${{ secrets.MONGODB_DB }}_$(date -I).tar.gz
+          path: "${{ secrets.MONGODB_DB }}_$(date -I).tar.gz"
 
   upload:
     runs-on: ubuntu-latest
@@ -36,5 +39,5 @@ jobs:
       - name: Upload file
         run: |
           mc alias set ${{ secrets.MINIO_ALIAS }}/ ${{ secrets.MINIO_URI }} ${{ secrets.MINIO_USER }} ${{ secrets.MINIO_PASSWORD }}
-          mc cp ./${{ secrets.MONGODB_DB }}_$(date -I).tar.gz ${{ secrets.MINIO_ALIAS }}/${{ secrets.MINIO_BUCKET }}
+          mc cp "./${{ secrets.MONGODB_DB }}_$(date -I).tar.gz" ${{ secrets.MINIO_ALIAS }}/${{ secrets.MINIO_BUCKET }}
           rm -rf $HOME/.mc
