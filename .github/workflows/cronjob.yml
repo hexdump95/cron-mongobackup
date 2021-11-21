@@ -39,5 +39,5 @@ jobs:
       - name: Upload file
         run: |
           mc alias set ${{ secrets.MINIO_ALIAS }}/ ${{ secrets.MINIO_URI }} ${{ secrets.MINIO_USER }} ${{ secrets.MINIO_PASSWORD }}
-          mc cp "./${{ secrets.MONGODB_DB }}_*.tar.gz" ${{ secrets.MINIO_ALIAS }}/${{ secrets.MINIO_BUCKET }}
+          mc cp ./${{ secrets.MONGODB_DB }}_*.tar.gz ${{ secrets.MINIO_ALIAS }}/${{ secrets.MINIO_BUCKET }}
           rm -rf $HOME/.mc
