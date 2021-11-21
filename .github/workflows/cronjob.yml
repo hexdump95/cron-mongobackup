@@ -1,0 +1,37 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+    
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    container: mongo:5.0-focal
+
+    steps:
+      - name: Compress db
+        run: |
+          mongodump --uri=${{ secrets.MONGODB_URI }}/${{ secrets.MONGODB_DB }}
+          tar -czf ${{ secrets.MONGODB_DB }}_$(date -I).tar.gz ./dump/${{ secrets.MONGODB_DB }}/
+        
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: mongobackup
+          path: ${{ secrets.MONGODB_DB }}_$(date -I).tar.gz
+
+  upload:
+    runs-on: ubuntu-latest
+    container: minio/mc:RELEASE.2021-11-16T20-37-36Z
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: mongobackup
+          
+      - name: Upload file
+        run: |
+          mc alias set ${{ secrets.MINIO_ALIAS }}/ ${{ secrets.MINIO_URI }} ${{ secrets.MINIO_USER }} ${{ secrets.MINIO_PASSWORD }}
+          mc cp ./${{ secrets.MONGODB_DB }}_$(date -I).tar.gz ${{ secrets.MINIO_ALIAS }}/${{ secrets.MINIO_BUCKET }}
+          rm -rf $HOME/.mc
