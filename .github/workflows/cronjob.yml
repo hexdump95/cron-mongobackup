@@ -1,7 +1,8 @@
 name: CI
 on:
   push:
-    branches: [ main ]
+    branches: 
+     - main
     
 jobs:
   backup:
@@ -23,6 +24,8 @@ jobs:
   upload:
     runs-on: ubuntu-latest
     container: minio/mc:RELEASE.2021-11-16T20-37-36Z
+    needs: 
+      - backup
 
     steps:
       - name: Download artifact
