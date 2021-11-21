@@ -22,7 +22,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: mongobackup
-          path: "${{ secrets.MONGODB_DB }}_$(date -I).tar.gz"
+          path: "${{ secrets.MONGODB_DB }}_*.tar.gz"
 
   upload:
     runs-on: ubuntu-latest
@@ -39,5 +39,5 @@ jobs:
       - name: Upload file
         run: |
           mc alias set ${{ secrets.MINIO_ALIAS }}/ ${{ secrets.MINIO_URI }} ${{ secrets.MINIO_USER }} ${{ secrets.MINIO_PASSWORD }}
-          mc cp "./${{ secrets.MONGODB_DB }}_$(date -I).tar.gz" ${{ secrets.MINIO_ALIAS }}/${{ secrets.MINIO_BUCKET }}
+          mc cp "./${{ secrets.MONGODB_DB }}_*.tar.gz" ${{ secrets.MINIO_ALIAS }}/${{ secrets.MINIO_BUCKET }}
           rm -rf $HOME/.mc
