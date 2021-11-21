@@ -8,10 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     container: mongo:5.0-focal
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        
+    steps:    
       - name: Compress db
         run: |
           mongodump --uri=${{ secrets.MONGODB_URI }}/${{ secrets.MONGODB_DB }}
